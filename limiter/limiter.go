@@ -32,14 +32,14 @@ func (l *Limiter) Middleware(next http.Handler) http.Handler {
 		}
 		blockKey := key + ":block"
 
-		if blocked, err := l.store.Exists(blockKey); blocked {
+		if blocked, _ := l.store.Exists(blockKey); blocked {
 			http.Error(w,
 				"you have reached the maximum number of requests or actions allowed within a certain time frame",
 				http.StatusTooManyRequests)
 			return
 		}
 
-		count, err := l.store.Incr(key)
+		count, _ := l.store.Incr(key)
 		if count == 1 {
 			l.store.Expire(key, time.Second)
 		}
