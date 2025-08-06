@@ -21,15 +21,21 @@ func NewRedisStore(addr, pass string, db int) *RedisStore {
 }
 
 func (s *RedisStore) Incr(key string) (int64, error) {
-	return s.client.Incr(s.ctx, key).Result()
+	ctx, cancel := context.WithTimeout(s.ctx, time.Second)
+	defer cancel()
+	return s.client.Incr(ctx, key).Result()
 }
 
 func (s *RedisStore) Expire(key string, expiration time.Duration) error {
-	return s.client.Expire(s.ctx, key, expiration).Err()
+	ctx, cancel := context.WithTimeout(s.ctx, time.Second)
+	defer cancel()
+	return s.client.Expire(ctx, key, expiration).Err()
 }
 
 func (s *RedisStore) Exists(key string) (bool, error) {
-	exists, err := s.client.Exists(s.ctx, key).Result()
+	ctx, cancel := context.WithTimeout(s.ctx, time.Second)
+	defer cancel()
+	exists, err := s.client.Exists(ctx, key).Result()
 	if err != nil {
 		return false, err
 	}

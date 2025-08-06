@@ -20,6 +20,8 @@ func main() {
 	})
 
 	handler := rl.Middleware(mux)
-	log.Println("Servidor rodando na porta 8080")
-	log.Fatal(http.ListenAndServe(":8080", handler))
+	log.Println("teste Servidor rodando na porta 8080")
+	if err := http.ListenAndServe(":8080", handler); err != nil {
+		log.Fatalf("Erro ao iniciar servidor: %v", err)
+	}
 }

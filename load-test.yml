@@ -1,0 +1,22 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 30
+      arrivalRate: 50
+    - duration: 60
+      rampTo: 200
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Sem token (limite por IP)"
+    flow:
+      - get:
+          url: "/"
+  - name: "Com token (limite por API_KEY)"
+    flow:
+      - get:
+          url: "/"
+          headers:
+            API_KEY: "abc123"
