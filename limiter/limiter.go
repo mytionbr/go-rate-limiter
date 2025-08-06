@@ -1,20 +1,27 @@
+package limiter
+
+import (
+	"net/http"
+	"time"
+)
+
 type Limiter struct {
-	store Store
-	rateLimitIP int64
+	store          Store
+	rateLimitIP    int64
 	rateLimitToken int64
-	blockDuration time.Duration
+	blockDuration  time.Duration
 }
 
-func Newlimiter(store Store, rateLimitIP, rateLimitToken int64, blockDuration time.Duration) *Limiter {
+func NewLimiter(store Store, rateLimitIP, rateLimitToken int64, blockDuration int64) *Limiter {
 	return &Limiter{
-		store: store,
-		rateLimitIP: rateLimitIP,
+		store:          store,
+		rateLimitIP:    rateLimitIP,
 		rateLimitToken: rateLimitToken,
-		blockDuration: blockDuration,
+		blockDuration:  time.Duration(blockDuration) * time.Second,
 	}
 }
 
-func (l *Limiter) Middleware(next http.Handle) http.Handler {
+func (l *Limiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		key := "ip:" + r.RemoteAddr
 		limit := l.rateLimitIP
@@ -25,12 +32,26 @@ func (l *Limiter) Middleware(next http.Handle) http.Handler {
 		}
 		blockKey := key + ":block"
 
-		if blocked, err := l.store.Exists(blockKey); blocked  {
+		if blocked, err := l.store.Exists(blockKey); blocked {
 			http.Error(w,
-			"you have reached the maximum number of requests or actions allowed within a certain time frame",
-			http.StatusTooManyRequests)
-			)
+				"you have reached the maximum number of requests or actions allowed within a certain time frame",
+				http.StatusTooManyRequests)
 			return
-		} 
+		}
+
+		count, err := l.store.Incr(key)
+		if count == 1 {
+			l.store.Expire(key, time.Second)
+		}
+		if count > limit {
+			l.store.Set(blockKey, 1, l.blockDuration)
+			http.Error(w,
+				"you have reached the maximum number of requests or actions allowed within a certain time frame",
+				http.StatusTooManyRequests)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+
 	})
-} 
+}
