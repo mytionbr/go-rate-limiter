@@ -12,11 +12,11 @@ type Limiter struct {
 	blockDuration  time.Duration
 }
 
-func NewLimiter(store Store, rateLimitIP, rateLimitToken int64, blockDuration int64) *Limiter {
+func NewLimiter(store Store, rateLimitIP, rateLimitToken, blockDuration int) *Limiter {
 	return &Limiter{
 		store:          store,
-		rateLimitIP:    rateLimitIP,
-		rateLimitToken: rateLimitToken,
+		rateLimitIP:    int64(rateLimitIP),
+		rateLimitToken: int64(rateLimitToken),
 		blockDuration:  time.Duration(blockDuration) * time.Second,
 	}
 }

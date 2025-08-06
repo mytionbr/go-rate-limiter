@@ -21,7 +21,8 @@ func Load() *Config {
 	_ = godotenv.Load()
 	toInt := func(key string, def int) int {
 		if v := os.Getenv(key); v != "" {
-			if i, err := strconv.Atoi(v); err == nil {
+			i, err := strconv.Atoi(v)
+			if err == nil {
 				return i
 			}
 			log.Fatalf("Invalid %s: %v", key, err)
