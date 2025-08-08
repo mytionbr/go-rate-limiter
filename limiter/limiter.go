@@ -1,6 +1,7 @@
 package limiter
 
 import (
+	"net"
 	"net/http"
 	"time"
 )
@@ -23,8 +24,13 @@ func NewLimiter(store Store, rateLimitIP, rateLimitToken, blockDuration int) *Li
 
 func (l *Limiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		key := "ip:" + r.RemoteAddr
+		host, _, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			host = r.RemoteAddr
+		}
 		limit := l.rateLimitIP
+
+		key := "ip:" + host
 
 		if token := r.Header.Get("API_KEY"); token != "" {
 			key = "token:" + token
