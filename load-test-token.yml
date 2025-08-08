@@ -1,0 +1,11 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 20
+      arrivalRate: 150
+scenarios:
+  - flow:
+      - get:
+          url: "/"
+          headers:
+            API_KEY: "abc123"
