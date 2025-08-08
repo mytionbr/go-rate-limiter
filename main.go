@@ -16,11 +16,11 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello, world!!!")
+		fmt.Fprintln(w, "GO RATE LIMITER")
 	})
 
 	handler := rl.Middleware(mux)
-	log.Println("teste Servidor rodando na porta 8080")
+	log.Println("Servidor rodando na porta 8080")
 	if err := http.ListenAndServe(":8080", handler); err != nil {
 		log.Fatalf("Erro ao iniciar servidor: %v", err)
 	}

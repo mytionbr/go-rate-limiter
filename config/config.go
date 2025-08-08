@@ -33,7 +33,7 @@ func Load() *Config {
 	return &Config{
 		RateLimitIP:      toInt("RATE_LIMIT_IP", 100),
 		RateLimitToken:   toInt("RATE_LIMIT_TOKEN", 100),
-		BlockDurationSec: toInt("BLOCK_DURATION_SEC", 60),
+		BlockDurationSec: toInt("BLOCK_DURATION_SECONDS", 60),
 		RedisAddr:        os.Getenv("REDIS_ADDR"),
 		RedisPassword:    os.Getenv("REDIS_PASSWORD"),
 		RedisDB:          toInt("REDIS_DB", 0),
